@@ -1,0 +1,184 @@
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
+using namespace std;
+
+class SeList
+{
+public:
+	SeList()
+		:_arr(NULL)
+		, _size(0)
+		, _capacity(0)
+	{}
+
+	SeList(const SeList& s)
+		:_arr(new int[s._size])
+		, _size(s._size)
+		, _capacity(s._size)
+	{
+		memcpy(_arr, s._arr, sizeof(int)*s._size);
+	}
+
+	SeList& operator=(const SeList& s)
+	{
+		if (this != &s)
+		{
+			delete[] _arr;
+			_arr = new int[s._size];
+			_size = s._size;
+			_capacity = s._size;
+		}
+		return *this;
+	}
+	////ÏÖ´úÐ´·¨
+	//SeList& operator=(const SeList& s)
+	//{
+	//	swap(_arr, s._arr);
+	//	swap(_size, s._size);
+	//	swap(_capacity, s._capacity);
+
+	//	return *this;
+	//}
+
+	~SeList()
+	{
+		if (_arr)
+		{
+			delete _arr;
+			_size = 0;
+			_capacity = 0;
+			_arr = NULL;
+		}
+	}
+	void PushBack(const int x)
+	{
+		CheckCapacity();
+		_arr[_size++] = x;
+	}
+
+	void PopBack()
+	{
+		assert(_size);
+		--_size;
+	}
+
+	void PushFront(const int x)
+	{
+		CheckCapacity();
+		int end = (int)_size;
+		while (end >= 0)
+		{
+			_arr[end + 1] = _arr[end];
+			--end;
+		}
+		_arr[0] = x;
+		++_size;
+		_capacity = _size;
+	}
+
+	void PopFront()
+	{
+		CheckCapacity();
+		int start = 0;
+		while (start <= (int)_size)
+		{
+			_arr[start] = _arr[start + 1];
+			++start;
+		}
+		--_size;
+		_capacity = _size;
+	}
+
+	void Insert(size_t pos,int x)
+	{
+		CheckCapacity();
+		assert(pos);
+
+		int tmp = _size;
+		while (tmp >= (int)pos)
+		{
+			_arr[tmp + 1] = _arr[tmp];
+			--tmp;
+		}
+		_arr[pos] = x;
+		++_size;
+		_capacity = _size;
+	}
+
+	void Erase(size_t pos)
+	{
+		int start = (int)pos + 1;
+		while (start <= (int)_size)
+		{
+			_arr[start - 1] = _arr[start];
+			++start;
+		}
+		--_size;
+		_capacity = _size;
+	}
+
+	size_t Find(const int x)
+	{
+		for (int i = 0; i < (int)_size; ++i)
+		{
+			if (_arr[i] == x)
+			{
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	void CheckCapacity()
+	{
+		if (_size >= _capacity)
+		{
+			_capacity = _capacity * 2 + 4;
+			_arr = (int*)realloc(_arr, sizeof(int)*_capacity);
+		}
+	}
+
+	void Print()
+	{
+		for (int i = 0; i < (int)_size; ++i)
+		{
+			cout << _arr[i] << " ";
+		}
+	}
+
+	int& operator[](size_t pos)
+	{
+		assert(pos);
+		return _arr[pos];
+	}
+		
+private:
+	int* _arr;
+	size_t _size;
+	size_t _capacity;
+};
+int main()
+{
+	SeList s;
+	s.PushBack(2);
+	s.PushBack(3);
+	s.PushBack(4);
+	s.PushBack(5);
+	s.PushBack(6);
+
+	s.PushFront(8);
+
+	size_t pos = s.Find(5);
+	s.Insert(pos, 7);
+
+	size_t tmp = s.Find(3);
+	s.Erase(tmp);
+
+	s.PopBack();
+	s.PopFront();
+
+	s.Print();
+
+}

@@ -1,0 +1,236 @@
+#include<iostream>
+#include<stdlib.h>
+#include<stdio.h>
+#include <algorithm>
+#include<assert.h>
+using namespace std;
+
+
+//定义节点的结构
+typedef int DataType;
+
+struct ListNode
+{
+	ListNode* _next;
+	ListNode* _prev;
+	DataType _data;
+
+	ListNode(const DataType x)
+		:_next(NULL)
+		, _prev(NULL)
+		, _data(x)
+	{}
+};
+
+class DeList
+{
+public:
+	DeList()
+		:_head(NULL)
+		, _tail(NULL)
+	{}
+
+	DeList(const DeList& ls)
+		:_head(NULL)
+		, _tail(NULL)
+	{
+		ListNode* cur = ls._head;
+		while (cur)
+		{
+			ListNode* tmp = new ListNode(cur->_data);
+			if (_head == NULL&&_tail == NULL)
+			{
+				_head = _tail = tmp;
+			}
+			else
+			{
+				_tail->_next = tmp;
+				tmp->_prev = _tail;
+				_tail = _tail->_next;
+			}
+			cur = cur->_next;
+		}
+	}
+
+	DeList& operator=(DeList& ls)
+	{
+		if (this != &ls)
+		{
+			swap(_head, ls._head);
+			swap(_tail, ls._tail);
+		}
+		return *this;
+	}
+
+	~DeList()
+	{
+		ListNode* cur = _head;
+		while (cur)
+		{
+			delete cur;
+			cur = cur->_next;
+		}
+	}
+
+	void PushBack(DataType x)
+	{
+		if (_head == NULL&&_tail == NULL)
+		{
+			_head = _tail = new ListNode(x);
+		}
+		else
+		{
+			ListNode* cur = new ListNode(x);
+			_tail->_next = cur;
+			cur->_prev = _tail;
+			_tail = cur;
+		}
+	}
+
+	void PopBack()
+	{
+		if (_head == NULL)
+		{
+			return;
+		}
+		ListNode* cur = _tail->_prev;
+		cur->_next = NULL;
+		delete _tail;
+		_tail = cur;
+	}
+
+	void PushFront(DataType x)
+	{
+		if (_head == NULL&&_tail == NULL)
+		{
+			_head = _tail = new ListNode(x);
+		}
+		else
+		{
+			ListNode* cur = new ListNode(x);
+			cur->_next = _head;
+			_head->_prev = cur;
+			_head = cur;
+		}
+	}
+	void PopFront()
+	{
+		if (_head == NULL)
+		{
+			return;
+		}
+		else
+		{
+			ListNode* cur = _head->_next;
+			delete _head;
+			_head = cur;
+			_head->_prev = NULL;
+		}
+
+	}
+	// 在pos的前面插入一个
+	void Insert(ListNode* pos, DataType x)
+	{
+		assert(pos);
+		if (_head == pos)
+		{
+			PushFront(x);
+		}
+		else
+		{
+			ListNode* cur = pos->_prev;
+			ListNode* tmp = new ListNode(x);
+			cur->_next = tmp;
+			tmp->_next = pos;
+			tmp->_prev = cur;
+			pos->_prev = tmp;
+		}
+	}
+
+	void Erase(ListNode* pos)
+	{
+		if (_head == pos)
+		{
+			PopFront();
+		}
+		else if (_tail == pos)
+		{
+			PopBack();
+		}
+		else
+		{
+			ListNode* cur = pos->_prev;
+			ListNode* next = pos->_next;
+			cur->_next = next;
+			next->_prev = cur;
+		}
+	}
+
+	ListNode* Find(DataType x)
+	{
+		ListNode* cur = _head;
+		while (cur)
+		{
+			if (cur->_data == x)
+			{
+				return cur;
+			}
+			cur = cur->_next;
+		}
+		return NULL;
+	}
+
+	//双向链表逆序
+	void Reverse()
+	{
+		ListNode* start = _head;
+		ListNode* end = _tail;
+		while (start != end && (start->_prev != end))
+		{
+			swap(start->_data, end->_data);
+			start = start->_next;
+			end = end->_prev;
+		}
+	}
+
+	void Print()
+	{
+		ListNode* cur = _head;
+		while (cur)
+		{
+			cout << cur->_data << " ";
+			cur = cur->_next;
+		}
+	}
+private:
+	ListNode* _head;
+	ListNode* _tail;
+};
+int main()
+{
+	DeList dl;
+	dl.PushBack(2);
+	dl.PushBack(3);
+	dl.PushBack(4);
+	dl.PushBack(5);
+	dl.PushBack(6);
+
+	dl.PushFront(7);
+
+	ListNode* pos = dl.Find(4);
+	dl.Insert(pos, 8);
+
+	ListNode*cur = dl.Find(5);
+	dl.Erase(cur);
+
+	dl.PopBack();
+	dl.PopFront();
+
+	dl.Print();
+	cout << endl;
+
+	dl.Reverse();
+	dl.Print();
+
+
+}

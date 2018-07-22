@@ -1,0 +1,228 @@
+#include<iostream>
+#include <algorithm>
+#include<stdio.h>
+#include<stdlib.h>
+#include<assert.h>
+using namespace std;
+
+//单链表
+struct ListNode
+{
+	int _val;
+	ListNode* _next;
+
+	ListNode(const int x)
+		:_val(x)
+		, _next(NULL)
+	{}
+};
+
+class SList
+{
+public:
+	SList()
+		:_head(NULL)
+		, _tail(NULL)
+	{}
+
+	SList(const SList& list)
+		:_head(NULL)
+		, _tail(NULL)
+	{
+		ListNode* cur = list._head;
+		while (cur)
+		{
+			ListNode* tmp = new ListNode(cur->_val);
+			if (_head == _tail == NULL)
+			{
+				_head = _tail = tmp;
+			}
+			else
+			{
+				_tail->_next = tmp;
+				_tail = _tail->_next;
+			}
+			cur = cur->_next;
+		}
+	}
+
+	SList& operator=(SList& list)
+	{
+		if (this != &list)
+		{
+			swap(_head, list._head);
+			swap(_tail, list._tail);
+		}
+		return *this;
+	}
+
+	~SList()
+	{
+		ListNode* cur = _head;
+		while (cur)
+		{
+			ListNode* next = cur->_next;
+			delete cur;
+			cur = next;
+		}
+	}
+
+	void PushBack(int x)
+	{
+		if (_head ==NULL && _tail == NULL)
+		{
+			_head = _tail = new ListNode(x);
+		}
+		else
+		{
+			_tail->_next = new ListNode(x);
+			_tail = _tail->_next;
+			_tail->_next = NULL;
+		}
+	}
+
+	void PopBack()
+	{
+		if (_head == NULL)
+		{
+			return;
+		}
+		ListNode* cur = _head;
+		while (cur->_next->_next)
+		{
+			cur = cur->_next;
+		}
+		//cur指向的是最后一个节点的上一个节点
+		_tail = cur;
+		cur->_next = NULL;
+	}
+
+	void PushFront(int x)
+	{
+		if (_head ==NULL && _tail == NULL)
+		{
+			_head = _tail = new ListNode(x);
+		}
+		else
+		{
+			ListNode* cur = new ListNode(x);
+			cur->_next = _head;
+			_head = cur;
+		}
+	}
+
+	void PopFront()
+	{
+		if (_head == NULL)
+		{
+			return;
+		}
+		ListNode* cur = _head;
+		ListNode* next = _head->_next;
+		delete cur;
+		cur = NULL;
+		_head = next;
+	}
+
+	void Insert(ListNode* pos, int x)
+	{
+		assert(pos);
+
+		if (_head == pos)
+		{
+			//相当于头插
+			PushFront(x);
+		}
+		else
+		{
+			ListNode* cur = _head;
+			while (cur->_next != pos)
+			{
+				cur = cur->_next;
+			}
+			ListNode* tmp = new ListNode(x);
+			cur->_next = tmp;
+			tmp->_next = pos;
+		}
+	}
+
+	void Erase(ListNode* pos)
+	{
+		if (_head == pos)
+		{
+			//头删
+			PopFront();
+		}
+		else if (_tail == pos)
+		{
+			//尾删
+			PopBack();
+		}
+		else
+		{
+			ListNode* cur = _head;
+			while (cur->_next != pos)
+			{
+				cur = cur->_next;
+			}
+			ListNode* next = pos->_next;
+			cur->_next = next;
+			delete pos;
+			pos = NULL;
+		}
+	}
+
+	ListNode* Find(int x)
+	{
+		if (_head == NULL)
+		{
+			return NULL;
+		}
+		ListNode* cur = _head;
+		while (cur)
+		{
+			if (cur->_val == x)
+			{
+				return cur;
+			}
+			cur = cur->_next;
+		}
+		return NULL;
+	}
+
+	void Print()
+	{
+		ListNode* cur = _head;
+		while (cur)
+		{
+			cout << cur->_val << " ";
+			cur = cur->_next;
+		}
+		cout << endl;
+	}
+private:
+	ListNode* _head;
+	ListNode* _tail;
+};
+//int main()
+//{
+//	SList  s;
+//	s.PushBack(0);
+//	s.PushBack(1);
+//	s.PushBack(2);
+//	s.PushBack(3);
+//	s.PushBack(4);
+//
+//	s.PushFront(8);
+//	s.PushFront(9);
+//
+//	ListNode* pos = s.Find(4);
+//	s.Insert(pos, 7);
+//
+//	ListNode* cur = s.Find(9);
+//	s.Erase(cur);
+//
+//	s.Print();
+//
+//
+//}
